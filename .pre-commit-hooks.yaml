@@ -1,0 +1,31 @@
+- id: biome
+  name: Biome
+  description: Lint and format project files with Biome
+  entry: biome check --write --no-errors-on-unmatched
+  language: node
+  types_or: [javascript, jsx, ts, tsx, json, css, html, graphql]
+
+- id: prettier
+  name: Prettier
+  description: Format project files with Prettier
+  entry: prettier --write --ignore-unknown
+  language: node
+  types_or:
+    [
+      javascript,
+      jsx,
+      ts,
+      tsx,
+      json,
+      yaml,
+      markdown,
+      html,
+      css,
+      scss,
+      vue,
+      svelte,
+      graphql,
+      toml,
+      less,
+      mdx,
+    ]

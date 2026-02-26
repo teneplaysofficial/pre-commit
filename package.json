@@ -1,0 +1,20 @@
+{
+  "name": "pre-commit",
+  "version": "1.0.0",
+  "private": true,
+  "bin": {
+    "biome": "./node_modules/@biomejs/biome/bin/biome",
+    "prettier": "./node_modules/prettier/bin/prettier.cjs"
+  },
+  "scripts": {
+    "fmt": "prettier --write ."
+  },
+  "dependencies": {
+    "@biomejs/biome": "^2.4.4",
+    "prettier": "3.8.1"
+  },
+  "devDependencies": {
+    "@tenedev/prettier-config": "^1.1.1"
+  },
+  "prettier": "@tenedev/prettier-config"
+}
