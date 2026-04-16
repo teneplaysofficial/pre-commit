@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Detect dependency changes
+        id: deps
+        run: |
+          curr=$(jq -r '.dependencies // {}' package.json)
+          prev=$(git show HEAD~1:package.json | jq -r '.dependencies // {}')
+
+          highest=""
+
+          get_type() {
+            old=$1
+            new=$2
+
+            clean_old=$(echo "$old" | sed 's/^[^0-9]*//')
+            clean_new=$(echo "$new" | sed 's/^[^0-9]*//')
+
+            IFS='.' read -r oM oN oP <<< "$clean_old"
+            IFS='.' read -r nM nN nP <<< "$clean_new"
+
+            if [ "$nM" -gt "$oM" ]; then echo "major"; return; fi
+            if [ "$nN" -gt "$oN" ]; then echo "minor"; return; fi
+            if [ "$nP" -gt "$oP" ]; then echo "patch"; return; fi
+          }
+
+          for dep in $(echo "$curr" | jq -r 'keys[]'); do
+            old=$(echo "$prev" | jq -r --arg d "$dep" '.[$d] // empty')
+            new=$(echo "$curr" | jq -r --arg d "$dep" '.[$d]')
+
+            [ -z "$old" ] && continue
+
+            type=$(get_type "$old" "$new")
+
+            case "$type" in
+              major) highest="major" ;;
+              minor) [ "$highest" != "major" ] && highest="minor" ;;
+              patch) [ -z "$highest" ] && highest="patch" ;;
+            esac
+          done
+
+          echo "highest=$highest" >> $GITHUB_OUTPUT
+
+      - name: Stop if no changes
+        if: steps.deps.outputs.highest == ''
+        run: echo "No dependency updates"
+
+      - name: Bump package.json version
+        if: steps.deps.outputs.highest != ''
+        id: bump
+        run: |
+          version=$(jq -r '.version' package.json)
+          IFS='.' read -r maj min pat <<< "$version"
+
+          case "${{ steps.deps.outputs.highest }}" in
+            major)
+              maj=$((maj+1)); min=0; pat=0 ;;
+            minor)
+              min=$((min+1)); pat=0 ;;
+            patch)
+              pat=$((pat+1)) ;;
+          esac
+
+          next="$maj.$min.$pat"
+
+          jq ".version = \"$next\"" package.json > package.tmp.json
+          mv package.tmp.json package.json
+
+          echo "next=$next" >> $GITHUB_OUTPUT
+
+      - name: Commit version bump
+        if: steps.deps.outputs.highest != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "Release ${{ steps.bump.outputs.next }}"
+          git push
+
+      - name: Create tag
+        if: steps.deps.outputs.highest != ''
+        run: |
+          git tag v${{ steps.bump.outputs.next }}
+          git push origin v${{ steps.bump.outputs.next }}
+
+      - name: Create GitHub Release
+        if: steps.deps.outputs.highest != ''
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ steps.bump.outputs.next }}
+          generate_release_notes: true
