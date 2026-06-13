@@ -1,6 +1,6 @@
 {
   "name": "pre-commit",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "bin": {
     "biome": "./node_modules/@biomejs/biome/bin/biome",
