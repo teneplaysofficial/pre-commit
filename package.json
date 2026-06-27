@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@biomejs/biome": "^2.4.12",
-    "prettier": "3.8.4"
+    "prettier": "3.9.0"
   },
   "devDependencies": {
     "@tenedev/prettier-config": "^1.1.1"
