@@ -10,7 +10,7 @@
     "fmt": "prettier --write ."
   },
   "dependencies": {
-    "@biomejs/biome": "^2.5.5",
+    "@biomejs/biome": "^2.5.7",
     "prettier": "3.9.6"
   },
   "devDependencies": {
