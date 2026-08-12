@@ -56,7 +56,7 @@
   resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-x64/-/cli-win32-x64-2.5.7.tgz#aba3fa4705d963ff8c89f26ab5d4534f8f963c96"
   integrity sha512-V+0wu/nrj2S+MhP4EQ0uHNolP0IALEsz45pg0WoKkHfDeh0+ItHwP/p7bX5RPoMOl9NkpHYWdYPhIcy2mACHvQ==
 
-"@tenedev/prettier-config@^1.3.2":
+"@tenedev/prettier-config@^1.3.3":
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/@tenedev/prettier-config/-/prettier-config-1.3.3.tgz#2a4de9f1e219d3c3ffef207aca835669269063e2"
   integrity sha512-Px4dUpF+/lbJkzbCBcbImG37nSx/ncFw/L+FnPJSwFISpnroECsw0vV8v7ndjHEapVquewIdy08Tffx+BhXPOA==
